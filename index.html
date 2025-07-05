@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Kuis Edukasi - Matematika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse:hover {
+            animation: pulse 1.5s infinite;
+        }
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        .choice-selected {
+            transform: scale(0.98);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-red-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <img src="https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Ilustrasi kelas belajar Matematika dengan papan tulis dan buku-buku berwarna cerah" class="mx-auto rounded-lg shadow-md mb-4 w-full h-48 object-cover">
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-800">KUIS MATEMATIKA</h1>
+            <p class="text-lg text-gray-600 mt-2">Uji pengetahuanmu dengan kuis interaktif ini!</p>
+            
+            <div class="flex justify-center mt-4 space-x-2">
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">SD</span>
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">SMP</span>
+                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">SMA/SMK</span>
+            </div>
+        </header>
+
+        <!-- Quiz Selection -->
+        <div id="level-selection" class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-indigo-700">Pilih Tingkat Kesulitan:</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="selectLevel('sd')" class="level-btn bg-green-50 hover:bg-green-100 border-green-200 text-green-700 py-4 px-6 rounded-lg transition-all">
+                    <div class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span>SD (Mudah)</span>
+                    </div>
+                </button>
+                <button onclick="selectLevel('smp')" class="level-btn bg-yellow-50 hover:bg-yellow-100 border-yellow-200 text-yellow-700 py-4 px-6 rounded-lg transition-all">
+                    <div class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span>SMP (Menengah)</span>
+                    </div>
+                </button>
+                <button onclick="selectLevel('sma')" class="level-btn bg-red-50 hover:bg-red-100 border-red-200 text-red-700 py-4 px-6 rounded-lg transition-all transition-all">
+                    <div class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        <span>SMA/SMK (Sulit)</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Container (Initially Hidden) -->
+        <div id="quiz-container" class="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
+            <!-- Quiz Info -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <span id="level-badge" class="px-3 py-1 rounded-full text-sm"></span>
+                    <span id="score" class="ml-2 text-gray-600">Skor: 0</span>
+                </div>
+                <div id="question-count" class="text-gray-600"></div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                <div id="progress-bar" class="progress-bar bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+
+            <!-- Question -->
+            <div id="question" class="text-xl font-medium mb-8 text-gray-800"></div>
+
+            <!-- Answer Choices -->
+            <div id="choices" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
+
+            <!-- Navigation -->
+            <!-- Navigasi Quiz (Update bagian ini) -->
+            <div class="flex justify-between mt-6">
+               <button id="back-btn" onclick="goBack()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-2 px-6 rounded-lg transition-all hidden disabled:opacity-50 disabled:cursor-not-allowed">
+                  Kembali
+               </button>
+               <button id="prev-btn" onclick="prevQuestion()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-lg transition-all hidden disabled:opacity-50 disabled:cursor-not-allowed">
+                  Sebelumnya
+               </button>
+               <button id="next-btn" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition-all">
+                  Selanjutnya
+               </button>
+            </div>
+        </div>
+
+        <!-- Results (Initially Hidden) -->
+        <div id="results" class="hidden bg-white rounded-xl shadow-lg p-8 text-center">
+            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1dca2ede-50d3-4dfc-97b0-fad1f929a982.png" alt="Ilustrasi piala dan bintang emas dengan latar belakang warna-warni untuk menunjukkan prestasi" class="mx-auto mb-6 rounded-lg">
+            <h2 class="text-2xl font-bold text-indigo-800 mb-4">Hasil Kuis Anda!</h2>
+            <div id="final-score" class="text-4xl font-bold mb-2"></div>
+            <div id="result-message" class="text-lg mb-6"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-800 mb-2">Jawaban Benar</h3>
+                    <div id="correct-answers" class="text-2xl font-bold text-blue-600"></div>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-red-800 mb-2">Jawaban Salah</h3>
+                    <div id="wrong-answers" class="text-2xl font-bold text-red-600"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-lg transition-all">
+                    Kerjakan Lagi
+                </button>
+                <button onclick="changeLevel()" class="bg-white hover:bg-gray-100 text-indigo-600 border border-indigo-600 py-3 px-8 rounded-lg transition-all">
+                    Ganti Tingkat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-gray-500 text-sm py-6">
+        &copy; 2025 Kuis Edukasi Indonesia Mata Pelajaran Matematika. Selamat belajar!
+    </footer>
+
+    <script>
+        // Quiz data for Bahasa Indonesia (3 difficulty levels)
+        const quizData = {
+            sd: [
+                {
+                    question: "Berapakah hasil dari 2 + 3?",
+                    choices: ["3", "6", "5", "4"],
+                    answer: 2
+                },
+                {
+                    question: "Berapakah hasil dari 10 - 4?",
+                    choices: ["7", "5", "3", "6"],
+                    answer: 3
+                },
+                {
+                    question: "Berapakah hasil dari 3 x 2?",
+                    choices: ["6", "5", "8", "4"],
+                    answer: 0
+                },
+                {
+                    question: "Jika Ani memiliki 8 apel dan memberikan 3 ke Budi, berapa sisa apel Ani?",
+                    choices: ["5", "3", "2", "4"],
+                    answer: 0
+                },
+                {
+                    question: "Luas persegi dengan sisi 4 cm adalah ...",
+                    choices: [
+                        "12 cm²",
+                        "14 cm²",
+                        "16 cm²",
+                        "18 cm²"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Satu jam sama dengan berapa menit?",
+                    choices: ["80 Menit", "50 Menit", "60 Menit", "40 Menit"],
+                    answer: 2
+                },
+                {
+                    question: "Urutan bilangan dari terkecil ke terbesar: 23, 12, 45, 30 adalah ...",
+                    choices: ["23, 12, 45, 30", "12, 23, 30, 45", "45, 30, 23, 12", "12, 45, 30, 23"],
+                    answer: 1
+                }
+            ],
+            smp: [
+                {
+                    question: "Berapakah hasil dari 12 x 5",
+                    choices: ["50", "60", "70", "80"],
+                    answer: 1
+                },
+                {
+                    question: "Hasil dari 36 ÷ 6 adalah ...",
+                    choices: [
+                        "5",
+                        "7",
+                        "4",
+                        "6"
+                    ],
+                    answer: 3
+                },
+                {
+                    question: "Nilai x dari persamaan 2x = 10 adalah ...",
+                    choices: [
+                        "4",
+                        "5",
+                        "6",
+                        "8"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Luas segitiga dengan alas 10 cm dan tinggi 8 cm adalah ...",
+                    choices: [
+                        "100 cm²",
+                        "80 cm²",
+                        "60 cm²",
+                        "40 cm²"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Hasil dari √81 adalah ...",
+                    choices: ["7", "8", "9", "10"],
+                    answer: 2
+                },
+                {
+                    question: "Jika sebuah lingkaran memiliki diameter 14 cm, maka jari-jarinya adalah ....",
+                    choices: ["7", "8", "9", "10"],
+                    answer: 0
+                },
+                {
+                    question: "Sebuah mobil menempuh jarak 240 km dalam 4 jam. Kecepatannya adalah ...",
+                    choices: ["100 km/jam", "80 km/jam", "90 km/jam", "60 km/jam"],
+                    answer: 3
+                }
+            ],
+            sma: [
+                {
+                    question: "Jika f(x) = 2x + 3, maka f(2) adalah ...",
+                    choices: ["5", "6", "7", "8"],
+                    answer: 2
+                },
+                {
+                    question: "Turunan dari f(x) = x² adalah ...",
+                    choices: ["x", "2x", "x²", "2x²"],
+                    answer: 1
+                },
+                {
+                    question: "Hasil dari lim (x→2) (x² - 4)/(x - 2) adalah ...",
+                    choices: [
+                        "2",
+                        "3",
+                        "4",
+                        "Tidak terdefinisi"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Jika sin(θ) = 0.5, maka nilai θ dalam derajat bisa jadi ...",
+                    choices: ["30°", "45°", "60°", "90°"],
+                    answer: 0
+                },
+                {
+                    question: "Rumus luas lingkaran adalah ...",
+                    choices: ["πr", "πr²", "2πr", "r²"],
+                    answer: 1
+                },
+                {
+                    question: "Jika log₂(8) = x, maka nilai x adalah ...",
+                    choices: ["2", "3", "4", "5"],
+                    answer: 1
+                },
+                {
+                    question: "Suku ke-n dari barisan aritmetika Un = 3n - 2. Maka U5 = ...",
+                    choices: ["13", "14", "15", "16"],
+                    answer: 0
+                }
+            ]
+        };
+
+        // Quiz state variables
+        let currentLevel = '';
+      let currentQuestion = 0;
+      let score = 0;
+      let userAnswers = [];
+      let selectedChoice = null;
+
+      const levelSelection = document.getElementById('level-selection');
+      const quizContainer = document.getElementById('quiz-container');
+      const results = document.getElementById('results');
+      const questionEl = document.getElementById('question');
+      const choicesEl = document.getElementById('choices');
+      const nextBtn = document.getElementById('next-btn');
+      const prevBtn = document.getElementById('prev-btn');
+      const scoreEl = document.getElementById('score');
+      const questionCountEl = document.getElementById('question-count');
+      const progressBar = document.getElementById('progress-bar');
+      const levelBadgeEl = document.getElementById('level-badge');
+      const finalScoreEl = document.getElementById('final-score');
+      const correctAnswersEl = document.getElementById('correct-answers');
+      const wrongAnswersEl = document.getElementById('wrong-answers');
+      const resultMessageEl = document.getElementById('result-message');
+      const backBtn = document.getElementById('back-btn');
+
+      function selectLevel(level) {
+         currentLevel = level;
+         currentQuestion = 0;
+         score = 0;
+         userAnswers = [];
+
+         levelSelection.classList.add('hidden');
+         quizContainer.classList.remove('hidden');
+         results.classList.add('hidden');
+
+         if (level === 'sd') {
+               levelBadgeEl.className = 'px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm';
+               levelBadgeEl.textContent = 'SD';
+         } else if (level === 'smp') {
+               levelBadgeEl.className = 'px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm';
+               levelBadgeEl.textContent = 'SMP';
+         } else {
+               levelBadgeEl.className = 'px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm';
+               levelBadgeEl.textContent = 'SMA/SMK';
+         }
+
+         loadQuestion();
+      }
+
+      function loadQuestion() {
+         const quiz = quizData[currentLevel];
+         const question = quiz[currentQuestion];
+
+         selectedChoice = null;
+
+         questionCountEl.textContent = `Soal ${currentQuestion + 1} dari ${quiz.length}`;
+         progressBar.style.width = `${(currentQuestion / quiz.length) * 100}%`;
+         scoreEl.textContent = `Skor: ${score}`;
+
+         questionEl.textContent = question.question;
+         choicesEl.innerHTML = '';
+
+         question.choices.forEach((choice, index) => {
+               const choiceEl = document.createElement('button');
+               choiceEl.className = 'bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-800 text-left p-4 rounded-lg transition-all animate-pulse';
+               choiceEl.textContent = choice;
+
+               if (userAnswers[currentQuestion] === index) {
+                  choiceEl.classList.add('choice-selected', 'bg-indigo-100', 'border-indigo-300');
+                  selectedChoice = index;
+               }
+
+               choiceEl.onclick = () => selectAnswer(index);
+               choicesEl.appendChild(choiceEl);
+         });
+
+         prevBtn.classList.toggle('hidden', currentQuestion === 0 || userAnswers[currentQuestion] === undefined);
+         prevBtn.disabled = currentQuestion !== 0 || userAnswers[currentQuestion] !== undefined;
+
+         nextBtn.textContent = currentQuestion === quiz.length - 1 ? 'Selesai' : 'Selanjutnya';
+      }
+
+      function selectAnswer(index) {
+         const allChoices = choicesEl.querySelectorAll('button');
+         allChoices.forEach(choice => {
+               choice.classList.remove('choice-selected', 'bg-indigo-100', 'border-indigo-300');
+         });
+
+         allChoices[index].classList.add('choice-selected', 'bg-indigo-100', 'border-indigo-300');
+         selectedChoice = index;
+         userAnswers[currentQuestion] = index;
+      }
+
+      function nextQuestion() {
+         const quiz = quizData[currentLevel];
+         const totalQuestions = quiz.length;
+
+         if (selectedChoice !== null) {
+               if (selectedChoice === quiz[currentQuestion].answer) {
+                  score += Math.round(100 / totalQuestions);
+                  scoreEl.textContent = `Skor: ${score}`;
+               }
+         }
+
+         if (currentQuestion === quiz.length - 1) {
+               showResults();
+               return;
+         }
+
+         currentQuestion++;
+         loadQuestion();
+      }
+
+      function prevQuestion() {
+         if (currentQuestion > 0) {
+               currentQuestion--;
+               loadQuestion();
+         }
+      }
+
+      function showResults() {
+         const quiz = quizData[currentLevel];
+         const totalQuestions = quiz.length;
+
+         let correctCount = 0;
+         userAnswers.forEach((answer, i) => {
+               if (answer === quiz[i].answer) correctCount++;
+         });
+
+         let wrongCount = totalQuestions - correctCount;
+         let finalScore = Math.round((correctCount / totalQuestions) * 100);
+
+         quizContainer.classList.add('hidden');
+         results.classList.remove('hidden');
+
+         finalScoreEl.textContent = `${finalScore}/100`;
+         correctAnswersEl.textContent = `${correctCount} soal`;
+         wrongAnswersEl.textContent = `${wrongCount} soal`;
+
+         let message = '';
+         if (finalScore >= 85) {
+               message = 'Kamu luar biasa! Pemahamanmu sangat baik.';
+         } else if (finalScore >= 70) {
+               message = 'Bagus! Kamu sudah paham banyak materi.';
+         } else if (finalScore >= 50) {
+               message = 'Cukup baik. Tetap semangat belajar ya!';
+         } else {
+               message = 'Masih perlu belajar lebih giat lagi, kamu pasti bisa!';
+         }
+
+         resultMessageEl.textContent = message;
+         progressBar.style.width = '100%';
+      }
+
+      function restartQuiz() {
+         currentQuestion = 0;
+         score = 0;
+         userAnswers = [];
+         loadQuestion();
+         results.classList.add('hidden');
+         quizContainer.classList.remove('hidden');
+      }
+
+      function changeLevel() {
+         results.classList.add('hidden');
+         levelSelection.classList.remove('hidden');
+      }
+
+      function goBack() {
+         if (userAnswers[0] === undefined) {
+               levelSelection.classList.remove('hidden');
+               quizContainer.classList.add('hidden');
+               results.classList.add('hidden');
+               currentQuestion = 0;
+               score = 0;
+               userAnswers = [];
+         }
+      }
+   </script>
+</body>
+</html>
